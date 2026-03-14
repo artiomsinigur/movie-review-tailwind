@@ -1,0 +1,20 @@
+# Build directories
+dist
+build
+coverage
+
+# Node modules
+node_modules
+
+# Database
+*.sqlite
+*.db
+
+# Vite / React environment files
+.env
+.env.*
+
+# Package locks
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
