@@ -24,5 +24,6 @@ export interface Movie {
 export type NewMovieRequest = Omit<Movie, 'id'>;
 
 export interface MovieState {
-    value: number
+    value: number,
+    status: 'idle' | 'loading' | 'failed'
 }
