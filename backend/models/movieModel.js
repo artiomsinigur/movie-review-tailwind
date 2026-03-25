@@ -1,97 +1,200 @@
-/**
- * Factory function to create a movie model with a given database instance.
- * @param {sqlite3.Database} db The database instance.
- * @returns {object} The movie model with data access methods.
- */
-module.exports = (db) => {
+const { connectDb } = require('../db/database');
 
-    /**
-     * Creates the 'movies' table if it doesn't already exist.
-     * @returns {Promise<void>}
-     */
-    const createTableMovies = () => {
-        return new Promise((resolve, reject) => {
-            db.run(`CREATE TABLE IF NOT EXISTS movies (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                rating TEXT,
-                imdb REAL,
-                duration INTEGER,
-                release_date TEXT,
-                director TEXT,
-                music_composed_by TEXT,
-                distributed_by TEXT,
-                budget INTEGER,
-                genre TEXT,
-                trailer_url TEXT,
-                poster_url TEXT,
-                description TEXT,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )`, (err) => {
+let db;
+async function getDb() {
+    if (!db) {
+        db = await connectDb();
+    }
+    return db;
+}
+
+/**
+ * Creates the 'movies' table if it doesn't already exist.
+ */
+const createTableMovies = async () => {
+    const database = await getDb();
+    return new Promise((resolve, reject) => {
+        database.run(
+            `CREATE TABLE IF NOT EXISTS movies (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            rating TEXT,
+            imdb REAL,
+            duration INTEGER,
+            release_date TEXT,
+            director TEXT,
+            music_composed_by TEXT,
+            distributed_by TEXT,
+            budget INTEGER,
+            genre TEXT,
+            trailer_url TEXT,
+            poster_url TEXT,
+            description TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`,
+            (err) => {
                 if (err) reject(err);
                 else resolve();
-            });
+            },
+        );
+    });
+};
+
+/**
+ * Finds a movie by its title.
+ */
+const findByTitle = async (title) => {
+    const database = await getDb();
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT * FROM movies WHERE title = ?`;
+        database.get(sql, [title], (err, row) => {
+            if (err) {
+                reject(err);
+            } else {
+                if (row && row.genre) {
+                    try { row.genre = JSON.parse(row.genre); } 
+                    catch(e) { row.genre = []; }
+                }
+                resolve(row);
+            }
         });
-    };
+    });
+};
 
-    /**
-     * Finds a movie by its title.
-     * @param {string} title The title of the movie to find.
-     * @returns {Promise<object|undefined>} A promise that resolves with the movie row if found, otherwise undefined.
-     */
-    const findByTitle = (title) => {
-        return new Promise((resolve, reject) => {
-            const sql = `SELECT * FROM movies WHERE title = ?`;
-            db.get(sql, [title], (err, row) => {
-                if (err) reject(err);
-                else resolve(row);
-            });
+/**
+ * Inserts a new movie.
+ */
+const insertMovie = async (movie) => {
+    const database = await getDb();
+    return new Promise((resolve, reject) => {
+        const sql = `
+            INSERT INTO movies (title, rating, imdb, duration, release_date, director, music_composed_by, distributed_by, budget, genre, trailer_url, poster_url, description)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        const params = [
+            movie.title, movie.rating, movie.imdb, movie.duration,
+            movie.release_date, movie.director, movie.music_composed_by, movie.distributed_by,
+            movie.budget, movie.genre, movie.trailer_url, movie.poster_url, movie.description,
+        ];
+
+        database.run(sql, params, function (err) {
+            if (err) reject(err);
+            else resolve(this.lastID);
         });
-    };
+    });
+};
 
-    /**
-     * Inserts a new movie into the database.
-     * @param {object} movie The movie object to insert.
-     * @returns {Promise<number>} A promise that resolves with the ID of the newly inserted movie.
-     */
-    const insert = (movie) => {
-        return new Promise((resolve, reject) => {
-            const sql = `
-                INSERT INTO movies (title, rating, imdb, duration, release_date, director, music_composed_by, distributed_by, budget, genre, trailer_url, poster_url, description)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `;
-            const params = [
-                movie.title, movie.rating, movie.imdb, movie.duration,
-                movie.release_date, movie.director, movie.music_composed_by, movie.distributed_by,
-                movie.budget, movie.genre, movie.trailer_url, movie.poster_url, movie.description
-            ];
-
-            db.run(sql, params, function(err) {
-                if (err) reject(err);
-                else resolve(this.lastID);
-            });
+/**
+ * Retrieves all movies.
+ */
+const getMovies = async () => {
+    const database = await getDb();
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT * FROM movies';
+        database.all(sql, (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                const formattedRows = rows.map((row) => {
+                    if (row.genre) {
+                        try { row.genre = JSON.parse(row.genre); } 
+                        catch (e) { row.genre = []; }
+                    }
+                    return row;
+                });
+                resolve(formattedRows);
+            }
         });
-    };
+    });
+};
 
-    /**
-     * Retrieves all movies from the database.
-     * @returns {Promise<Array<object>>} A promise that resolves with an array of movie objects.
-     */
-    const getMovies = async () => {
-        return new Promise((resolve, reject) => {
-            const sql = "SELECT * FROM movies"
-            db.all(sql, (err, rows) => {
-                if (err) reject(err);
-                else resolve(rows);
-            });
-        })
-    }
+/**
+ * Retrieves a movie by its ID.
+ */
+const getMovieById = async (id) => {
+    const database = await getDb();
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT * FROM movies WHERE id = ?';
+        database.get(sql, [id], (err, row) => {
+            if (err) {
+                reject(err);
+            } else {
+                if (row && row.genre) {
+                    try { row.genre = JSON.parse(row.genre); } 
+                    catch (e) { row.genre = []; }
+                }
+                resolve(row);
+            }
+        });
+    });
+};
 
-    return {
-        createTableMovies,
-        findByTitle,
-        insert,
-        getMovies
-    };
+/**
+ * Checks if a movie exists by ID.
+ */
+const existsById = async (id) => {
+    const database = await getDb();
+    return new Promise((resolve, reject) => {
+        const sql = "SELECT 1 FROM movies WHERE id = ? LIMIT 1";
+        database.get(sql, [id], (err, row) => {
+            if (err) reject(err);
+            else resolve(!!row);
+        });
+    });
+};
+
+/**
+ * Updates a movie by its ID.
+ */
+const updateMovieById = async (id, movie) => {
+    const database = await getDb();
+    
+    return new Promise((resolve, reject) => {
+        const sql = `
+            UPDATE movies 
+            SET title = ?, rating = ?, imdb = ?, duration = ?, release_date = ?, 
+                director = ?, music_composed_by = ?, distributed_by = ?, 
+                budget = ?, genre = ?, trailer_url = ?, poster_url = ?, 
+                description = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        `;
+        const params = [
+            movie.title, movie.rating, movie.imdb, movie.duration,
+            movie.release_date, movie.director, movie.music_composed_by, movie.distributed_by,
+            movie.budget, movie.genre, movie.trailer_url, movie.poster_url, movie.description,
+            id
+        ];
+
+        database.run(sql, params, function (err) {
+            if (err) reject(err);
+            else resolve(this.changes); // Returns number of rows affected
+        });
+    });
+};
+
+/**
+ * Delete a movie by its ID.
+ */
+const deleteMovieById = async (id) => {
+    const database = await getDb();
+
+    return new Promise((resolve, reject) => {
+        const sql = 'DELETE FROM movies WHERE id = ?'
+        database.run(sql, [id], function (err) {
+            if (err) reject(err);
+            else resolve(this.changes); // Returns number of rows affected
+        });
+    });
+};
+
+module.exports = {
+    createTableMovies,
+    findByTitle,
+    insertMovie,
+    getMovies,
+    getMovieById,
+    existsById,
+    updateMovieById,
+    deleteMovieById,
 };

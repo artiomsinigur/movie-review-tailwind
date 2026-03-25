@@ -1,5 +1,4 @@
 const express = require('express');
-const { connectDb } = require('./db/database');
 const { initializeTables } = require('./db/init');
 const movieRoutes = require('./routes/movieRoutes');
 
@@ -9,19 +8,13 @@ const PORT = 3000;
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Global variable for db instance
-let db;
-
 async function startServer() {
     try {
-        // Connect to the database
-        db = await connectDb();
-
-        // Initialize tables
-        await initializeTables(db);
+        // Initialize tables (now handles its own connection)
+        await initializeTables();
 
         // Register movie routes
-        app.use('/', movieRoutes);
+        app.use('/api', movieRoutes);
 
         // Start the server
         app.listen(PORT, () => {

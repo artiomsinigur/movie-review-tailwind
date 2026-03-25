@@ -23,7 +23,7 @@ export const watchlistApi = createApi({
     // fetchBaseQuery is a lightweight wrapper around the native fetch API
     baseQuery: fetchBaseQuery({ baseUrl: '/' }),
 
-    // We declare tag types here for our automated cache invalidation
+    // Tag types is for automated cache invalidation
     tagTypes: ['Watchlist'],
 
     endpoints: (builder) => ({
@@ -51,7 +51,7 @@ export const watchlistApi = createApi({
             providesTags: ['Watchlist']
         }),
 
-        // 2. MUTATION: addCount (Replaces the POST request)
+        // 2. MUTATION: addMovieToWatchlist (Replaces the POST request)
         // <ReturnType, ArgumentType>
         addMovieToWatchlist: builder.mutation<WatchlistResponse, number>({
             query: (amount) => ({
@@ -60,8 +60,8 @@ export const watchlistApi = createApi({
                 body: { amount } // Automatically JSON stringified
             }),
 
-            // THE MAGIC: When this mutation succeeds, invalidate the 'Count' tag.
-            // This forces the `fetchCount` query to automatically refetch!
+            // THE MAGIC: When this mutation succeeds, invalidate the 'Watchlist' tag.
+            // This forces the `getFakeWatchlist` query to automatically refetch!
             invalidatesTags: ['Watchlist']
         }),
     }),
