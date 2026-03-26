@@ -1,6 +1,28 @@
 {
-  "name": "movie-review-backend",
-  "version": "1.0.0",
-  "private": true,
-  "type": "commonjs"
+    "name": "server",
+    "version": "1.0.0",
+    "description": "Movie Review API built with Express and SQLite3",
+    "main": "server.ts",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "node runner.js",
+        "build": "vite build",
+        "start": "node dist/server.js",
+        "db:init": "node db/init.js",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "lint": "eslint . --ext .js --ext .ts"
+    },
+    "dependencies": {
+        "cors": "^2.8.6",
+        "express": "^5.2.1",
+        "sqlite3": "^6.0.1"
+    },
+    "devDependencies": {
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.6",
+        "nodemon": "^3.0.1",
+        "typescript": "^6.0.2",
+        "vite": "^8.0.0"
+    }
 }

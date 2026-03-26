@@ -1,7 +1,7 @@
-const movieModel = require('../models/movieModel')
+import movieModel from '../models/movieModel.js';
 
 // Handles business rules. Notice there is no req, res, or SQL here.
-exports.addMovie = async (data) => {
+export const addMovie = async (data) => {
     // 1. Validations
     if (!data.title) {
         throw new Error("Movie title is required")
@@ -25,11 +25,11 @@ exports.addMovie = async (data) => {
     return { id: insertId, ...data }
 }
 
-exports.getMovies = async () => {
+export const getMovies = async () => {
     return await movieModel.getMovies()
 }
 
-exports.getMovie = async (id) => {
+export const getMovie = async (id) => {
     if (isNaN(id)) {
         const customError = new Error("Provide a valid ID")
         customError.status = 400
@@ -46,7 +46,7 @@ exports.getMovie = async (id) => {
     return await movieModel.getMovieById(id)
 }
 
-exports.updateMovie = async (id, data) => {
+export const updateMovie = async (id, data) => {
     if (isNaN(id)) {
         const customError = new Error("Provide a valid ID")
         customError.status = 400
@@ -73,7 +73,7 @@ exports.updateMovie = async (id, data) => {
     return await movieModel.getMovieById(id)
 }
 
-exports.deleteMovie = async (id) => {
+export const deleteMovie = async (id) => {
     if (isNaN(id)) {
         const customError = new Error("Provide a valid ID")
         customError.status = 400
@@ -90,3 +90,11 @@ exports.deleteMovie = async (id) => {
     const changes = await movieModel.deleteMovieById(id)
     return changes > 0
 }
+
+export default {
+    addMovie,
+    getMovies,
+    getMovie,
+    updateMovie,
+    deleteMovie,
+};

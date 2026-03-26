@@ -1,7 +1,7 @@
-const movieService = require('../services/movieService')
+import movieService from '../services/movieService.js';
 
 // Handles the HTTP layer. Extracts data, calls the service, sends the response.
-exports.createMovie = async (req, res) => {
+export const createMovie = async (req, res) => {
     try {
         // 1. Extract data from request
         const movieData = req.body
@@ -24,7 +24,7 @@ exports.createMovie = async (req, res) => {
     }
 }
 
-exports.getMovies = async (req, res) => {
+export const getMovies = async (req, res) => {
     try {
         // This would be replaced by actual controller logic
         const movies = await movieService.getMovies();
@@ -34,7 +34,7 @@ exports.getMovies = async (req, res) => {
     }
 }
 
-exports.getMovieById = async (req, res) => {
+export const getMovieById = async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -52,7 +52,7 @@ exports.getMovieById = async (req, res) => {
     }
 };
 
-exports.updateMovieById = async (req, res) => {
+export const updateMovieById = async (req, res) => {
     try {
         const { id } = req.params;
         const movieData = req.body;
@@ -74,7 +74,7 @@ exports.updateMovieById = async (req, res) => {
     }
 };
 
-exports.deleteMovieById = async (req, res) => {
+export const deleteMovieById = async (req, res) => {
     try {
         const { id } = req.params;
         await movieService.deleteMovie(id);
@@ -87,4 +87,12 @@ exports.deleteMovieById = async (req, res) => {
             message: error.message
         });
     }
+};
+
+export default {
+    createMovie,
+    getMovies,
+    getMovieById,
+    updateMovieById,
+    deleteMovieById,
 };

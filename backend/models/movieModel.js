@@ -1,4 +1,4 @@
-const { connectDb } = require('../db/database');
+import { connectDb } from '../db/database.js';
 
 let db;
 async function getDb() {
@@ -11,7 +11,7 @@ async function getDb() {
 /**
  * Creates the 'movies' table if it doesn't already exist.
  */
-const createTableMovies = async () => {
+export const createTableMovies = async () => {
     const database = await getDb();
     return new Promise((resolve, reject) => {
         database.run(
@@ -44,7 +44,7 @@ const createTableMovies = async () => {
 /**
  * Finds a movie by its title.
  */
-const findByTitle = async (title) => {
+export const findByTitle = async (title) => {
     const database = await getDb();
     return new Promise((resolve, reject) => {
         const sql = `SELECT * FROM movies WHERE title = ?`;
@@ -65,7 +65,7 @@ const findByTitle = async (title) => {
 /**
  * Inserts a new movie.
  */
-const insertMovie = async (movie) => {
+export const insertMovie = async (movie) => {
     const database = await getDb();
     return new Promise((resolve, reject) => {
         const sql = `
@@ -88,7 +88,7 @@ const insertMovie = async (movie) => {
 /**
  * Retrieves all movies.
  */
-const getMovies = async () => {
+export const getMovies = async () => {
     const database = await getDb();
     return new Promise((resolve, reject) => {
         const sql = 'SELECT * FROM movies';
@@ -112,7 +112,7 @@ const getMovies = async () => {
 /**
  * Retrieves a movie by its ID.
  */
-const getMovieById = async (id) => {
+export const getMovieById = async (id) => {
     const database = await getDb();
     return new Promise((resolve, reject) => {
         const sql = 'SELECT * FROM movies WHERE id = ?';
@@ -133,7 +133,7 @@ const getMovieById = async (id) => {
 /**
  * Checks if a movie exists by ID.
  */
-const existsById = async (id) => {
+export const existsById = async (id) => {
     const database = await getDb();
     return new Promise((resolve, reject) => {
         const sql = "SELECT 1 FROM movies WHERE id = ? LIMIT 1";
@@ -147,7 +147,7 @@ const existsById = async (id) => {
 /**
  * Updates a movie by its ID.
  */
-const updateMovieById = async (id, movie) => {
+export const updateMovieById = async (id, movie) => {
     const database = await getDb();
     
     return new Promise((resolve, reject) => {
@@ -176,7 +176,7 @@ const updateMovieById = async (id, movie) => {
 /**
  * Delete a movie by its ID.
  */
-const deleteMovieById = async (id) => {
+export const deleteMovieById = async (id) => {
     const database = await getDb();
 
     return new Promise((resolve, reject) => {
@@ -188,7 +188,7 @@ const deleteMovieById = async (id) => {
     });
 };
 
-module.exports = {
+export default {
     createTableMovies,
     findByTitle,
     insertMovie,
