@@ -1,0 +1,12 @@
+{
+    "name": "@art/foundry",
+    "version": "1.0.0",
+    "description": "Internal CLI toolset for building and managing all workspaces",
+    "license": "MIT",
+    "author": "Artiom",
+    "type": "module",
+    "engines": {
+        "node": ">=24.0.0"
+    },
+    "bin": "scripts/tasks.js"
+}

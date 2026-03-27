@@ -2,10 +2,13 @@
     "name": "server",
     "version": "1.0.0",
     "description": "Movie Review API built with Express and SQLite3",
+    "license": "MIT",
+    "author": "Artiom",
     "main": "server.ts",
     "private": true,
     "type": "module",
     "scripts": {
+        "clean": "foundry clean dist",
         "dev": "node runner.js",
         "build": "vite build",
         "start": "node dist/server.js",
@@ -19,6 +22,7 @@
         "sqlite3": "^6.0.1"
     },
     "devDependencies": {
+        "@art/foundry": "workspace:*",
         "@types/cors": "^2.8.19",
         "@types/express": "^5.0.6",
         "nodemon": "^3.0.1",

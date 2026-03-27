@@ -1,5 +1,4 @@
-import React from "react";
-import { useGetWatchlistQuery, useGetFakeWatchlistQuery } from "../api/watchlistApi";
+import { useGetFakeWatchlistQuery } from "../api/watchlistApi";
 
 export default function Watchlist() {
     // 1. useGetWatchlistQuery automatically fetches data when the component mounts.

@@ -1,4 +1,3 @@
-import React from "react";
 import { useAddMovieMutation } from "../api/moviesApi";
 import type { NewMovieRequest } from "../types";
 
